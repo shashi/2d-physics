@@ -2,11 +2,25 @@
 #define CLASSES_BODY_
 
 #include "classes/Point.h"
+#include "classes/Vector.h"
+#include "classes/Transform.h"
 #include "classes/GraphicObject.h"
 //#include "classes/Force.h"
 
+#define BODY_LINE 1
+#define BODY_CIRCLE 2
+#define BODY_RECTANGLE 3
+
 class Body: public GraphicObject {
+  private:
+    int type;
   public:
+    void setType(int t) {
+        t = type;
+    }
+    int getType() {
+        return type;
+    }
     /**
      * Density of the shape
      *
@@ -44,7 +58,7 @@ class Body: public GraphicObject {
     /**
      * Get the centroid of the shape
      */
-    Point centroid();
+    Point Centroid();
 
     /**
      * Get moment of inertia about a line perpendicular to the plane
@@ -76,7 +90,7 @@ class Body: public GraphicObject {
     /**
      * Interact with another body
      */
-    void interactWith(Body body);
+    void InteractWith(Body * body);
 
     /**
      * Weight = area or length * density
@@ -87,6 +101,16 @@ class Body: public GraphicObject {
      * area
      */
     float area();
+
+    /**
+     *
+     */
+    Transform transform;
+
+    void ApplyImpulse(Vector delmom, float delangular);
+
+    void AddTime(float dt);
+    Vector momentum();
 };
 
 #endif // CLASSES_BODY_

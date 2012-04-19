@@ -11,6 +11,10 @@ Line::Line(Point _end1, Point _end2) {
     end2 = _end2;
 }
 
+float Line::angle() {
+    return atan2(end2.x - end1.x, end2.y - end1.y);
+}
+
 float Line::slope() {
     return (end1.y - end2.y) / (end1.x - end2.x);
 }

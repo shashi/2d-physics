@@ -53,6 +53,7 @@ void Screen::Setup() {
 
 // HACK: to pass instance variable  to static function
 void (*__drawFunction)();
+void (*__idleFunction)();
 void (*__mouseFunction)(int, int, int, int);
 void (*__motionFunction)(int, int);
 void (*__passiveMotionFunction)(int, int);
@@ -78,6 +79,7 @@ void Screen::ShowWindow() {
     glutCreateWindow("Physics Simulator");
     __drawFunction = drawFunction;
     glutDisplayFunc(Draw);
+    glutIdleFunc(__idleFunction);
     glutMouseFunc(__mouseFunction);
     glutMotionFunc(__motionFunction);
     glutPassiveMotionFunc(__passiveMotionFunction);
@@ -91,6 +93,9 @@ void Screen::SetDrawFunction(void (*df) ()) {
     drawFunction = df;
 }
 
+void Screen::SetIdleFunction(void (*idlef) ()) {
+    __idleFunction = idlef;
+}
 void Screen::SetMouseFunction(void (*mf) (int, int, int, int)) {
     __mouseFunction = mf;
 }

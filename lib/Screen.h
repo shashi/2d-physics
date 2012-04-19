@@ -29,6 +29,7 @@ class Screen {
 
     void GetPixelColor(int x, int y);
     void SetDrawFunction(void (*df)());
+    void SetIdleFunction(void (*df)());
     void SetMouseFunction(void (*df)(int, int, int, int));
     void SetMotionFunction(void (*df)(int, int));
     void SetPassiveMotionFunction(void (*df)(int, int));

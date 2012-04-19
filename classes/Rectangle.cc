@@ -1,4 +1,5 @@
 #include "classes/Rectangle.h"
+
 #include <cmath>
 #include <GL/glut.h>
 
@@ -26,3 +27,16 @@ void Rectangle::draw() {
     Line(D, C).draw();
     Line(A, D).draw();
 }
+
+void Rectangle::InteractWith(Body * body) {
+    // Find out the momentum vector of the other body,
+    // Find out the component along the impact.
+    // this.ApplyImpulse(Impulse);
+    
+
+    // Transform = Physics::ApplyForce(Transform);
+    // Gradient = Physics::ApplyForce(Gradient);
+    // Angular velocity = Physics::ApplyForce(Angular velocity, Force);
+    // Torque / MI = Physics::ApplyForce(Angular momentunm, MI);
+}
+

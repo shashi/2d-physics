@@ -1,16 +1,17 @@
 #ifndef CLASSES_RECTANGLE_
 #define CLASSES_RECTANGLE_
 
-#include "classes/Shape.h"
+#include "classes/Body.h"
 #include "classes/Line.h"
 #include "classes/Point.h"
+#include "classes/GraphicObject.h"
 
 /**
  * B ----------- C
  *  |           |
  * A ----------- D
  */
-class Rectangle: public Shape {
+class Rectangle: public Body {
     Point A;
     float width, height, angleBAX;
   public:
@@ -20,6 +21,8 @@ class Rectangle: public Shape {
 
     void draw();
     Point* GetVertices();
+    Point Centroid();
+    void InteractWith(Body * body);
 };
 
 #endif // CLASSES_RECTANGLE_
