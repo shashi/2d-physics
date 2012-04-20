@@ -15,6 +15,8 @@ class Circle: public Body {
     Circle(Point, float);
     Circle(float);
     Circle();
+    float weight();
+    float area();
 
     Point Centroid();
     void draw();

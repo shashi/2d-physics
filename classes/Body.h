@@ -11,6 +11,10 @@
 #define BODY_CIRCLE 2
 #define BODY_RECTANGLE 3
 
+#ifndef PI
+    #define PI 3.141592653589793
+#endif
+
 class Body: public GraphicObject {
   private:
     int type;
@@ -21,6 +25,7 @@ class Body: public GraphicObject {
     int getType() {
         return type;
     }
+    bool fixed;
     /**
      * Density of the shape
      *

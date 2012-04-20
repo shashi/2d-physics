@@ -19,6 +19,8 @@ class Line: public Body {
     Point OtherEnd();
 
     void draw();
+    float DistanceFrom(Point p);
+    Point ProjectionOf(Point p);
   private:
     void BresenhamsAlgo(float x1, float y1, float x2, float y2);
     void DDA(float x1, float y1, float x2, float y2);

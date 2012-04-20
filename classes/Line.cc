@@ -16,7 +16,7 @@ float Line::angle() {
 }
 
 float Line::slope() {
-    return (end1.y - end2.y) / (end1.x - end2.x);
+    return (end2.y - end1.y) / (end2.x - end1.x);
 }
 
 float Line::length() {
@@ -119,4 +119,26 @@ void Line::DDA(float x1,float y1,float x2,float y2)
         colorPoint(x,y);
     }
 
+}
+
+Point Line::ProjectionOf(Point p) {
+  float l2 = length();
+        l2 *= l2; // Fix this
+  // Consider the line extending the segment, parameterized as v + t (w - v).
+  // We find projection of point p onto the line. 
+  // It falls where t = [(p-v) . (w-v)] / |w-v|^2
+  float t = (p - end1) * (end2 - end1) / l2;
+  Point projection = end1 + ((end2 - end1) * t);  // Projection falls on the segment
+}
+
+float Line::DistanceFrom(Point p) {
+  float l2 = length(),
+        t = (p - end1) * (end2 - end1) / l2;
+
+    l2 *= l2; // Fix this
+
+  if (t < 0.0) return Line(p, end1).length();       // Beyond the 'v' end of the segment
+  else if (t > 1.0) return Line(p, end2).length();
+  Point projection = end1 + ((end2 - end1) * t);  // Projection falls on the segment
+  return Line(p, projection).length();
 }

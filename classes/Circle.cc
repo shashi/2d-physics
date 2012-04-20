@@ -2,24 +2,35 @@
 
 #include <cmath>
 #include <cstdio>
+#include <ctime>
 
 #include "classes/Line.h"
 
-#define _FILL true
+#define _FILL false
 
 Circle::Circle(int xc, int yc, float _radius) {
     radius = _radius;
-    centre = Point(xc, yc);
+    centre = Point(0, 0);
+    transform.matrix[0][2] = xc;
+    transform.matrix[1][2] = yc;
+    fixed = false;
+    setType(BODY_CIRCLE);
 }
 
 Circle::Circle(Point C, float _radius) {
     radius = _radius;
-    centre = C;
+    centre = Point(0, 0);
+    transform.matrix[0][2] = C.x;
+    transform.matrix[1][2] = C.y;
+    fixed = false;
+    setType(BODY_CIRCLE);
 }
 
 Circle::Circle(float _radius) {
     radius = _radius;
     centre = Point(0, 0);
+    fixed = false;
+    setType(BODY_CIRCLE);
 }
 
 bool filled_verticals[1000];
@@ -134,19 +145,91 @@ void Circle::InteractWith(Body * body) {
 }
 
 void Circle::InteractWith(Circle * c) {
-    if (Line(Centroid(), c->Centroid()).length()
-            <= c->radius + radius) {
-        float angle = Line(Centroid(), c->Centroid()).angle();
-        Vector v, dv;
-        Vector dp = momentum() - c->momentum();
-        dv = dp / weight();
+    Line l = Line(Centroid(), c->Centroid());
+    if (l.length() <= c->radius + radius) {
+        // collision!
+        // exchange a bit of momentum
+        // Using equation of conservation of momentum and
+        // Elastic collision
 
-        transform.AddVelocity(dv);
-        c->transform.AddVelocity(dv * -1);
+        Vector u1 = transform.velocity,
+               u2 = c->transform.velocity;
+
+        float angle = l.angle();
+        // vector along which collision occured.
+        Vector unit_vector = Vector(sin(angle), cos(angle));
+
+        float _u1 = u1 * unit_vector,
+              _u2 = u2 * unit_vector,
+
+              m1 = weight(),
+              m2 = c->weight(),
+              _v1, _v2;
+
+        _v1 = (_u1 * (m1 - m2) + 2 * m2 * _u2) / (m1 + m2);
+        _v2 = (_u2 * (m2 - m1) + 2 * m1 * _u1) / (m1 + m2);
+        fprintf(stderr, "Ball one, radius %f: %f, %f", radius, _v1, _v2);
+
+        Vector v1, v2;
+        v1 = unit_vector * (_v1 - _u1);
+        v2 = unit_vector * (_v2 - _u2);
+
+        transform.AddVelocity(v1);
+        c->transform.AddVelocity(v2);
     }
 }
 
 void Circle::InteractWith(Rectangle * r) {
+    Point A = r->A(), B = r->B(), C = r->C(), D = r->D();
+    Line edge = Line(A, B); float angle;
+    fprintf(stderr, "%f\n", Line(A, B).DistanceFrom(Centroid()));
+    if (fabs(Line(A, B).DistanceFrom(Centroid())) <= radius) {
+        edge = Line(A, B);
+    } else if (fabs(Line(B, C).DistanceFrom(Centroid())) <= radius) {
+        edge = Line(B, C);
+    }
+    else if (fabs(Line(C, D).DistanceFrom(Centroid())) <= radius) {
+        edge = Line(C, D);
+    }
+    else if (fabs(Line(D, A).DistanceFrom(Centroid())) <= radius) {
+        edge = Line(D, A);
+    } else {
+        return;
+    }
+
+    fprintf(stderr, "COLLISION");
+    Point poi = edge.ProjectionOf(Centroid());
+
+    Vector u1 = transform.velocity,
+           u2 = r->transform.velocity;
+
+    angle = Line(Centroid(), poi).angle();
+    // vector along which collision occured.
+    Vector unit_vector = Vector(sin(angle), cos(angle));
+
+    float _u1 = u1 * unit_vector,
+          _u2 = u2 * unit_vector,
+
+          m1 = weight(),
+          m2 = r->weight(),
+          _v1, _v2;
+
+    _v1 = (_u1 * (m1 - m2) + 2 * m2 * _u2) / (m1 + m2);
+    _v2 = (_u2 * (m2 - m1) + 2 * m1 * _u1) / (m1 + m2);
+    fprintf(stderr, "Ball one, radius %f: %f, %f", radius, _v1, _v2);
+
+    Vector v1, v2;
+    v1 = unit_vector * (_v1 - _u1);
+    v2 = unit_vector * (_v2 - _u2);
+
+    transform.AddVelocity(v1);
+    r->transform.AddVelocity(v2);
 }
 
+float Circle::weight() {
+    return area() * density;
+}
 
+float Circle::area() {
+    return PI * pow(radius, 2);
+}

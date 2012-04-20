@@ -12,17 +12,23 @@
  * A ----------- D
  */
 class Rectangle: public Body {
-    Point A;
-    float width, height, angleBAX;
+    Point _A, _B, _C, _D, centre;
   public:
+    float width, height;
+    Transform local_transform;
 
     Rectangle(Point A, float width, float height, float angleBAX);
     Rectangle(Point A, float width, float height);
 
     void draw();
     Point* GetVertices();
+    bool ContainsPoint(Point);
     Point Centroid();
     void InteractWith(Body * body);
+    Point A();
+    Point B();
+    Point C();
+    Point D();
 };
 
 #endif // CLASSES_RECTANGLE_

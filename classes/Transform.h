@@ -22,6 +22,7 @@ class Transform {
      * set matrix
      */
     void set_matrix(float[3][3]);
+    void set_velocity(Vector);
 
     /**
      * Velocity
@@ -57,6 +58,7 @@ class Transform {
      * Add rotation by an angle to the transform
      */
     void Rotate(float by);
+    void Rotate(float by, Point about);
 
     /**
      * Add a translation to the transformation matrix
