@@ -5,7 +5,7 @@
 #include <GL/glut.h>
 
 
-Rectangle::Rectangle(Point _A_, float _width, float _height) {
+Rectangle::Rectangle(Point _centre, float _width, float _height) {
     width = _width;
     height = _height;
 
@@ -20,13 +20,15 @@ Rectangle::Rectangle(Point _A_, float _width, float _height) {
 
     centre = Point(0, 0);
 
-    transform.matrix[0][2] = _A_.x + x;
-    transform.matrix[1][2] = _A_.y + y;
+    transform.matrix[0][2] = _centre.x;
+    transform.matrix[1][2] = _centre.y;
+    transform.matrix[0][0] =
+        transform.matrix[1][1] = 1;
 }
 
-Rectangle::Rectangle(Point _A_, float _width, float _height, float _angleBAX) {
+Rectangle::Rectangle(Point _centre, float _width, float _height, float _angleBAX) {
 
-    Rectangle(_A_, _width, _height);
+    Rectangle(_centre, _width, _height);
     transform.Rotate(_angleBAX);
 }
 
@@ -75,4 +77,8 @@ bool Rectangle::ContainsPoint(Point p) {
     Point polygon[4] = {A(), B(), C(), D()};
 
     return Util::InsidePolygon(polygon, 4, p);
+}
+
+float Rectangle::area() {
+    return height * width;
 }

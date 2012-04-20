@@ -13,6 +13,11 @@ Circle::Circle(int xc, int yc, float _radius) {
     centre = Point(0, 0);
     transform.matrix[0][2] = xc;
     transform.matrix[1][2] = yc;
+    fg_color[0]
+        = fg_color[1]
+        = fg_color[2]
+        = 1.0;
+
     fixed = false;
     setType(BODY_CIRCLE);
 }
@@ -22,6 +27,11 @@ Circle::Circle(Point C, float _radius) {
     centre = Point(0, 0);
     transform.matrix[0][2] = C.x;
     transform.matrix[1][2] = C.y;
+    fg_color[0]
+        = fg_color[1]
+        = fg_color[2]
+        = 1.0;
+
     fixed = false;
     setType(BODY_CIRCLE);
 }
@@ -29,6 +39,11 @@ Circle::Circle(Point C, float _radius) {
 Circle::Circle(float _radius) {
     radius = _radius;
     centre = Point(0, 0);
+    fg_color[0]
+        = fg_color[1]
+        = fg_color[2]
+        = 1.0;
+
     fixed = false;
     setType(BODY_CIRCLE);
 }
@@ -112,6 +127,7 @@ Point Circle::Centroid() {
 void Circle::draw() {
     Point C = Centroid();
     Circle::MidPointAlgo(C.x, C.y, (float) radius);
+    drawRadialLine(0);
 }
 /**
  * Draw a circle with radial line
@@ -122,13 +138,10 @@ void Circle::draw(float angle) {
 }
 
 void Circle::drawRadialLine(float angle) {
-    Point C = Centroid();
-    Point A = Centroid();
+    Point A = Point(radius, 0);
+    A = transform * A;
 
-    A.x += cos(angle) * radius;
-    A.y += sin(angle) * radius;
-
-    Line(C, A).draw();
+    Line(Centroid(), A).draw();
 }
 
 bool Circle::ContainsPoint(Point P) {
@@ -157,7 +170,7 @@ void Circle::InteractWith(Circle * c) {
 
         float angle = l.angle();
         // vector along which collision occured.
-        Vector unit_vector = Vector(sin(angle), cos(angle));
+        Vector unit_vector = Vector(cos(angle), sin(angle));
 
         float _u1 = u1 * unit_vector,
               _u2 = u2 * unit_vector,
@@ -168,7 +181,6 @@ void Circle::InteractWith(Circle * c) {
 
         _v1 = (_u1 * (m1 - m2) + 2 * m2 * _u2) / (m1 + m2);
         _v2 = (_u2 * (m2 - m1) + 2 * m1 * _u1) / (m1 + m2);
-        fprintf(stderr, "Ball one, radius %f: %f, %f", radius, _v1, _v2);
 
         Vector v1, v2;
         v1 = unit_vector * (_v1 - _u1);
@@ -181,8 +193,9 @@ void Circle::InteractWith(Circle * c) {
 
 void Circle::InteractWith(Rectangle * r) {
     Point A = r->A(), B = r->B(), C = r->C(), D = r->D();
-    Line edge = Line(A, B); float angle;
-    fprintf(stderr, "%f\n", Line(A, B).DistanceFrom(Centroid()));
+    Line edge = Line(A, B);
+    float angle;
+
     if (fabs(Line(A, B).DistanceFrom(Centroid())) <= radius) {
         edge = Line(A, B);
     } else if (fabs(Line(B, C).DistanceFrom(Centroid())) <= radius) {
@@ -197,7 +210,7 @@ void Circle::InteractWith(Rectangle * r) {
         return;
     }
 
-    fprintf(stderr, "COLLISION");
+    // Point of impact.
     Point poi = edge.ProjectionOf(Centroid());
 
     Vector u1 = transform.velocity,
@@ -206,6 +219,15 @@ void Circle::InteractWith(Rectangle * r) {
     angle = Line(Centroid(), poi).angle();
     // vector along which collision occured.
     Vector unit_vector = Vector(sin(angle), cos(angle));
+
+    if (r->fixed) {
+        float v = u1 * unit_vector;
+        Vector v_ = unit_vector * (v * -2);
+        transform.AddVelocity(v_);
+        return;
+    }
+
+    fprintf(stderr, "COLLISION %f\n", edge.DistanceFrom(Centroid()));
 
     float _u1 = u1 * unit_vector,
           _u2 = u2 * unit_vector,
@@ -216,7 +238,6 @@ void Circle::InteractWith(Rectangle * r) {
 
     _v1 = (_u1 * (m1 - m2) + 2 * m2 * _u2) / (m1 + m2);
     _v2 = (_u2 * (m2 - m1) + 2 * m1 * _u1) / (m1 + m2);
-    fprintf(stderr, "Ball one, radius %f: %f, %f", radius, _v1, _v2);
 
     Vector v1, v2;
     v1 = unit_vector * (_v1 - _u1);

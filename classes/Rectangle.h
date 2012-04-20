@@ -25,6 +25,7 @@ class Rectangle: public Body {
     bool ContainsPoint(Point);
     Point Centroid();
     void InteractWith(Body * body);
+    float area();
     Point A();
     Point B();
     Point C();

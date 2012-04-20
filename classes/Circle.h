@@ -9,6 +9,7 @@
 class Circle: public Body {
   public:
     float radius;
+    float fg_color[3];
     Point centre;
 
     Circle(int, int, float);
